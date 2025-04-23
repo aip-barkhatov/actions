@@ -1,0 +1,77 @@
+name: Rusable binary build workflow
+description: |
+  ------------------
+  reusable build C++/Go/Rust bin action
+  ------------------
+inputs:
+  PROJECT_LAN:
+    description: "Language of source code (C++/Rust/Go)"
+    required: true
+    default: "C++"
+
+  CC:
+    description: "C lang compiler"
+    required: false
+    default: clang-15
+
+  CXX:
+    description: "C++ lang compiler"
+    required: false
+    default: clang++-15
+
+  ALERTS_ENABLED:
+    description: "Send alerts to telegram: true, false"
+    required: false
+
+  PKGLIST:
+    description: "Path to list of packages required for app build"
+    required: false
+    default: ""
+
+runs:
+  using: composite
+
+  steps:
+    - name: git - checkout self repo
+      uses: actions/checkout@v3
+      with:
+        submodules: "true"
+
+    - name: Set env
+      shell: bash
+      run: |
+        echo "BINARY_OUTPUT_NAME=$(echo ${{ github.repository }} | awk -F '/' '{print $2}')_$(echo ${{ github.ref_name }}_amd64.r64)" >> $GITHUB_ENV
+        echo "PROJECT_NAME=$(echo ${{ github.repository }} | awk -F '/' '{print $2}')" >> $GITHUB_ENV
+        echo "CXX=$(echo ${{ inputs.CXX }})" >> $GITHUB_ENV
+        echo "CXX=$(echo ${{ inputs.CXX }})" >> $GITHUB_ENV
+
+    - name: apt - install required pkgs
+      if: inputs.PKGLIST != ""
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo xargs apt-get -y install < ${{ inputs.PKGLIST }}
+
+    - name: Build C++ application
+      if: inputs.PROJECT_LAN == "C++"
+      shell: bash
+      run: |
+        cmake -B build
+        cmake --build build
+        mv ./build/src/$PROJECT_NAME.r64 $BINARY_OUTPUT_NAME
+
+    - name: Build Rust application
+      if: inputs.PROJECT_LAN == "Rust"
+      shell: bash
+      run: echo
+
+    - name: Build Golang application
+      if: inputs.PROJECT_LAN == "Go"
+      shell: bash
+      run: echo
+
+    - name: Test
+      shell: bash
+      run: |
+        echo $BINARY_OUTPUT_NAME
+        echo $PROJECT_NAME
