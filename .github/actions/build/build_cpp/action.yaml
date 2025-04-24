@@ -31,9 +31,10 @@ runs:
       shell: bash
       run: |
         echo "BINARY_OUTPUT_NAME=$(echo ${{ github.repository }} | awk -F '/' '{print $2}')_$(echo ${{ github.ref_name }}_amd64.r64)" >> $GITHUB_ENV
-        echo "PROJECT_NAME=$(echo ${{ github.repository }} | awk -F '/' '{print $2}')" >> $GITHUB_ENV
+        # echo "PROJECT_NAME=$(echo ${{ github.repository }} | awk -F '/' '{print $2}')" >> $GITHUB_ENV
+        echo "PROJECT_NAME=spectre-sync" >> $GITHUB_ENV
         echo "CXX=$(echo ${{ inputs.CXX }})" >> $GITHUB_ENV
-        echo "CXX=$(echo ${{ inputs.CXX }})" >> $GITHUB_ENV
+        echo "CC=$(echo ${{ inputs.CC }})" >> $GITHUB_ENV
 
     - name: Build C++ application
       shell: bash
