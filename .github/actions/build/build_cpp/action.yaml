@@ -1,0 +1,43 @@
+name: Rusable binary build
+description: |
+  ------------------
+  reusable build C++ bin action
+  ------------------
+inputs:
+  CC:
+    description: "C lang compiler"
+    required: false
+    default: clang-15
+
+  CXX:
+    description: "C++ lang compiler"
+    required: false
+    default: clang++-15
+
+  CHECKOUT_BRANCH:
+    description: "Branch for checkout"
+    required: true
+
+runs:
+  using: composite
+
+  steps:
+    - name: git - checkout self repo
+      uses: actions/checkout@v4
+      with:
+        submodules: "true"
+
+    - name: Set env
+      shell: bash
+      run: |
+        echo "BINARY_OUTPUT_NAME=$(echo ${{ github.repository }} | awk -F '/' '{print $2}')_$(echo ${{ github.ref_name }}_amd64.r64)" >> $GITHUB_ENV
+        echo "PROJECT_NAME=$(echo ${{ github.repository }} | awk -F '/' '{print $2}')" >> $GITHUB_ENV
+        echo "CXX=$(echo ${{ inputs.CXX }})" >> $GITHUB_ENV
+        echo "CXX=$(echo ${{ inputs.CXX }})" >> $GITHUB_ENV
+
+    - name: Build C++ application
+      shell: bash
+      run: |
+        cmake -B build
+        cmake --build build
+        mv ./build/src/$PROJECT_NAME.r64 $BINARY_OUTPUT_NAME
