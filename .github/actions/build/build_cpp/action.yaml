@@ -42,3 +42,11 @@ runs:
         cmake -B build
         cmake --build build
         mv ./build/src/$PROJECT_NAME.r64 $BINARY_OUTPUT_NAME
+
+    - name: git - checkout system repo
+      uses: actions/checkout@v4
+      with:
+        repository: aip-barkhatov/actions
+        path: system-repo-aip
+        ref: main
+        clean: false
